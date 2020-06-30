@@ -3,11 +3,11 @@
 namespace App\Controllers;
 
 use Sober\Controller\Controller;
-use Partials\Story;
 
 class Page extends Controller
 {
     use Partials\Story;
+
     public function photoCredits()
     {
         if (basename(get_page_template()) !== 'page-photo-credits.blade.php') {
@@ -92,15 +92,23 @@ class Page extends Controller
         return $photos;
     }
 
+    /*
+    Create a new Wordpress Query for looping `pcc-story` post types.
+    */
     public function storiesQuery ()
     {
         $meta_query_args = array();
 
+        /* If the clear parameter is set, unset all parameters so they
+        aren't queried. */
         if (get_query_var( 'clear' )) {
-            /* TODO: Improve this implementation of Clear. All form data shouldn't be submitted. */
+
+            /* TODO: Improve this implementation. Parameters should
+            be unset on submission and before reaching this point. */
             remove_query_arg ( 'org' );
             remove_query_arg( 'clear' );
         } else if (get_query_var( 'org' )) {
+            /* If filtering by a single organization name. */
             $meta_query_args = [
               'key' => 'pcc_story_organization',
               'value' => get_query_var( 'org' )
@@ -120,33 +128,35 @@ class Page extends Controller
         return $query;
     }
 
+    /*
+    Return an array of unique organization names sorted alphabetically,
+    false if there are no organizations.
+    */
     public function storyOrgs()
     {
-        $key = 'pcc_story_organization';
-        $type = 'pcc-story';
-        $status = 'publish';
+      $terms = get_terms ( 'pcc-organization' );
 
-        global $wpdb;
+      if ($terms && ! is_wp_error( $terms ) ) {
 
-        $results = $wpdb->get_col(
-            $wpdb->prepare(
-                "
-                    SELECT pm.meta_value FROM {$wpdb->postmeta} pm
-                    LEFT JOIN {$wpdb->posts} p ON p.ID = pm.post_id
-                    WHERE pm.meta_key = %s
-                    AND p.post_status = %s
-                    AND p.post_type = %s
-                ",
-                $key,
-                $status,
-                $type
-            )
-        );
-        $results = array_unique( $results );
-        sort( $results );
-        return $results;
+          foreach ($terms as $term ) {
+              $results[] = $term->name;
+          }
+
+          $results = array_unique( $results );
+          sort( $results );
+
+          return $results;
+      }
+
+      return false;
     }
 
+    /*
+    Create a link list for navigating Stories by taxonomy terms. The first link
+    of the list is a link to the Community Stories page which lists all stories.
+    Returns false if there are no terms, or the supplied taxonomy name is
+    invalid.
+    */
     public static function taxonomy_menu_list ( $taxonomy = false )
     {
         if ( $taxonomy ) {
@@ -174,9 +184,11 @@ class Page extends Controller
                     $output .= '</li>';
                 }
                 $output .= '</ul>';
+
                 return $output;
             }
         }
+
         return false;
     }
 

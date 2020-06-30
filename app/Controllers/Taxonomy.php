@@ -3,14 +3,17 @@
 namespace App\Controllers;
 
 use Sober\Controller\Controller;
+use Partials\Stories;
 
 class Taxonomy extends Controller
 {
     /*
-    Given the current taxonomy term, return an array of unique organizations that has that term.
+    Given the current taxonomy term, return an array of unique organizations
+    that has that term. Return false if there are no organizations.
     */
     public function storyOrgs()
     {
+
         $term = get_term_by( 'slug', get_query_var( 'term' ), get_query_var( 'taxonomy' ) );
         if ( !empty ($term) ) {
             $posts = get_posts( array(
@@ -25,7 +28,8 @@ class Taxonomy extends Controller
             ) );
 
             foreach ( $posts as $post ) {
-                $orgs[] = get_post_meta ( $post->ID, 'pcc_story_organization', true );
+                $org_terms = get_the_terms ($post->ID, 'pcc-organization');
+                $orgs[] = $org_terms[0]->name;
             }
 
             $orgs = array_unique ( $orgs );

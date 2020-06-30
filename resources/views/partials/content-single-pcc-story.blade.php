@@ -1,7 +1,7 @@
 <article @php post_class('container') @endphp>
     <header>
         @include('partials/breadcrumb')
-        <h1 class="entry-title">{{ $story_org }} - "{!! App::title() !!}"</h1>
+        <h1 class="entry-title">{!! App::title() !!}</h1>
     </header>
     @include('partials/entry-meta')
 
