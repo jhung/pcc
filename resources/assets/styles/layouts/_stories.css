@@ -19,6 +19,8 @@
   position: relative;
   top: var(--spacing-3);
   width: var(--spacing-20);
+  position: relative;
+  top: 6px;
 }
 
 .pcc-story-filter {

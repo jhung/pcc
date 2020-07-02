@@ -119,7 +119,6 @@ class Page extends Controller
             [
                 'post_type' => 'pcc-story',
                 'posts_per_page' => -1,
-                'post__in' => $postIds,
                 'orderby' => 'post_date',
                 'order' => 'desc',
                 'meta_query' => array( $meta_query_args ),
@@ -159,6 +158,7 @@ class Page extends Controller
     */
     public static function taxonomy_menu_list ( $taxonomy = false )
     {
+        $output = '';
         if ( $taxonomy ) {
             $terms = get_terms ( $taxonomy );
 

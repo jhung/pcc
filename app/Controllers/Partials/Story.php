@@ -6,7 +6,7 @@ trait Story
     /*
     Get an array of regions for a story. Returns false if there are no regions.
     */
-    public function storyRegions ()
+    public static function storyRegions ()
     {
         $terms = get_the_terms( get_the_id(), 'pcc-region' );
         if ($terms && ! is_wp_error( $terms )) {
